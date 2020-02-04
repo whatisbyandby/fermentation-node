@@ -1,1 +1,4 @@
 Quart == 0.10.0
+influxdb == 5.2.3
+w1thermsensor == 1.1.2
+RPi.GPIO == 0.7.0

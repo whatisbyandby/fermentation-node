@@ -6,6 +6,7 @@ from influxdb import InfluxDBClient
 from temp_reader import TempReader
 from controller_state import ControllerState
 from temp_comparer import TempComparer
+from state_controller import StateController
 
 class FermentationController:
     def __init__(self, time_units=1):
@@ -14,6 +15,7 @@ class FermentationController:
         self.comparer = TempComparer()
         self.state = ControllerState.CORRECT
         self.controller_thread = Thread(target=self.main_loop)
+        self.state_controller = StateController()
         self.database_client = InfluxDBClient(host="localhost", port=8086, database="ferm_data")
 
     def write_to_database(self, current_temp, current_state):
@@ -57,7 +59,9 @@ class FermentationController:
             current_temp = self.temp_reader.get_current_temp()
             new_state = self.comparer.compare_temps(current_temp, self.state)
             self.state = new_state
+            self.state_controller.set_state(self.state)
             self.write_to_database(current_temp, self.state)
+            print(current_temp, self.state)
             time.sleep(self.time_units)
 
 
